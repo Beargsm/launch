@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity Launcher PWA</title>
+    <title>Mega Activity Launcher PWA</title>
     
     <!-- Manifiesto embebido en Base64 para que sea instalable como App nativa -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJzaG9ydF9uYW1lIjogIkxhdW5jaGVyV2ViIiwKICAibmFtZSI6ICJNeSBYaWFvbWkgQWN0aXZpdHkgTGF1bmNoZXIgUE9BIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvNTczOC81NzM4MDMxLnBuZyIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMTIxMjEyIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNjcwMCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0Igp9">
+    <link rel="manifest" href="data:application/json;base64,ewogICJzaG9ydF9uYW1lIjogIk1lZ2FMYXVuY2hlciIsCiAgIm5hbWUiOiAiTWVnYSBYaWFvbWkgQWN0aXZpdHkgTGF1bmNoZXIgUE9BIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvNTczOC81NzM4MDMxLnBuZyIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMTIxMjEyIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNjcwMCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0Igp9">
     
     <style>
         body { 
@@ -18,27 +18,42 @@
         }
         h2 { color: #ff6700; margin-bottom: 5px; }
         p { color: #aaa; font-size: 14px; margin-bottom: 25px; }
+        .category-title {
+            color: #ff6700;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            text-align: left;
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
         .btn-container { 
             display: flex; 
             flex-direction: column; 
-            gap: 15px; 
+            gap: 12px; 
             max-width: 400px; 
             margin: 0 auto; 
         }
         .btn { 
-            background: #ff6700; 
+            background: #2a2a2a; 
             color: white; 
             text-decoration: none; 
-            padding: 18px; 
-            border-radius: 12px; 
+            padding: 15px; 
+            border-radius: 10px; 
             font-weight: bold; 
-            font-size: 16px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+            font-size: 15px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
             display: block; 
+            text-align: left;
             transition: background 0.2s;
+            border-left: 5px solid #ff6700;
         }
         .btn:active { 
-            background: #cf5300; 
+            background: #3a3a3a; 
         }
         #installBtn { 
             background: #28a745; 
@@ -57,18 +72,59 @@
 </head>
 <body>
 
-    <h2>Launcher Progresivo 🚀</h2>
-    <p>Usa los botones para abrir las configuraciones del sistema</p>
+    <h2>Mega Launcher 🚀</h2>
+    <p>Acceso directo a configuraciones y aplicaciones del sistema</p>
     
-    <!-- Botón dinámico de instalación -->
     <button id="installBtn">📥 Instalar Aplicación</button>
 
+    <!-- PANELES GENERALES -->
+    <div class="category-title">⚙️ Sistema y Ajustes</div>
     <div class="btn-container">
-        <!-- Sintaxis universal corregida para evitar el menú "Abrir con" -->
-        <a class="btn" href="intent:#Intent;action=android.intent.action.POWER_USAGE_SUMMARY;launchFlags=0x10000000;end">🔋 Uso de Batería</a>
-        <a class="btn" href="intent:#Intent;action=android.settings.BATTERY_SAVER_SETTINGS;launchFlags=0x10000000;end">⚡ Ahorro de Energía</a>
         <a class="btn" href="intent:#Intent;action=android.settings.SETTINGS;launchFlags=0x10000000;end">⚙️ Ajustes Generales</a>
-        <a class="btn" href="intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;launchFlags=0x10000000;end">🛠️ Opciones de Desarrollador</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.DEVICE_INFO_SETTINGS;launchFlags=0x10000000;end">ℹ️ Acerca del Teléfono</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.ACCESSIBILITY_SETTINGS;launchFlags=0x10000000;end">♿ Accesibilidad</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.USER_DICTIONARY_SETTINGS;launchFlags=0x10000000;end">🛠️ Administración General</a>
+    </div>
+
+    <!-- CONEXIONES -->
+    <div class="category-title">🌐 Conexiones inalámbricas</div>
+    <div class="btn-container">
+        <a class="btn" href="intent:#Intent;action=android.settings.WIFI_SETTINGS;launchFlags=0x10000000;end">📶 Configuración Wi-Fi</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.BLUETOOTH_SETTINGS;launchFlags=0x10000000;end">🔹 Bluetooth</a>
+    </div>
+
+    <!-- PANTALLA Y SEGURIDAD -->
+    <div class="category-title">🔒 Pantalla y Seguridad</div>
+    <div class="btn-container">
+        <a class="btn" href="intent:#Intent;action=android.settings.DISPLAY_SETTINGS;launchFlags=0x10000000;end">🔆 Pantalla y Brillo</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.SECURITY_SETTINGS;launchFlags=0x10000000;end">🛡️ Seguridad General</a>
+        <a class="btn" href="intent:#Intent;action=android.app.action.SET_NEW_PASSWORD;launchFlags=0x10000000;end">🔑 Configurar Patrón / Bloqueo</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.LOCKSCREEN_SETTINGS;launchFlags=0x10000000;end">🔒 Pantalla de Bloqueo</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.SYNC_SETTINGS;launchFlags=0x10000000;end">👤 Cuentas y Respaldo</a>
+    </div>
+
+    <!-- ENERGÍA Y BATERÍA -->
+    <div class="category-title">🔋 Energía y Rendimiento</div>
+    <div class="btn-container">
+        <a class="btn" href="intent:#Intent;action=android.intent.action.POWER_USAGE_SUMMARY;launchFlags=0x10000000;end">🔋 Uso de Batería</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS;launchFlags=0x10000000;end">🚀 Optimizar Batería</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.BATTERY_SAVER_SETTINGS;launchFlags=0x10000000;end">⚡ Ahorro Batería</a>
+    </div>
+
+    <!-- APLICACIONES Y PERMISOS -->
+    <div class="category-title">📱 Aplicaciones y Alertas</div>
+    <div class="btn-container">
+        <a class="btn" href="intent:#Intent;action=android.settings.MANAGE_APPLICATIONS_SETTINGS;launchFlags=0x10000000;end">📱 Aplicaciones Instaladas</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS;launchFlags=0x10000000;end">🔓 Permisos para Leer Alertas</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.NOTIFICATION_SETTINGS;launchFlags=0x10000000;end">🔔 Notificaciones</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;data=package:com.android.chrome;launchFlags=0x10000000;end">🌐 Notificaciones de Google Chrome</a>
+    </div>
+
+    <!-- ENLACES DIRECTOS A TIENDAS / APPS -->
+    <div class="category-title">🛍️ Aplicaciones Externas</div>
+    <div class="btn-container" style="margin-bottom: 40px;">
+        <a class="btn" href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.xiaomi.mipicks;launchFlags=0x10000000;end" style="border-left-color: #28a745;">🛍️ Mipicks (GetApps)</a>
+        <a class="btn" href="intent://details?id=de.szalkowski.activitylauncher#Intent;package=com.android.vending;scheme=market;launchFlags=0x10000000;end" style="border-left-color: #007bff;">🚀 Activity Launcher (En Play Store)</a>
     </div>
 
     <script>
