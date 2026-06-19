@@ -5,44 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activity Launcher PWA</title>
     
-    <!-- TRUCO 1: Inyectar el Manifest.json directamente desde el mismo archivo HTML -->
+    <!-- Manifiesto embebido en Base64 para que sea instalable como App nativa -->
     <link rel="manifest" href="data:application/json;base64,ewogICJzaG9ydF9uYW1lIjogIkxhdW5jaGVyV2ViIiwKICAibmFtZSI6ICJNeSBYaWFvbWkgQWN0aXZpdHkgTGF1bmNoZXIgUE9BIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvNTczOC81NzM4MDMxLnBuZyIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMTIxMjEyIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNjcwMCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0Igp9">
     
     <style>
-        body { font-family: Arial, sans-serif; background: #121212; color: white; padding: 20px; text-align: center; }
-        .btn-container { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
-        .btn { background: #ff6700; color: white; text-decoration: none; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: block; }
-        .btn:active { background: #cf5300; }
-        #installBtn { background: #28a745; display: none; margin: 20px auto; padding: 12px 24px; border: none; color: white; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #121212; 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+        }
+        h2 { color: #ff6700; margin-bottom: 5px; }
+        p { color: #aaa; font-size: 14px; margin-bottom: 25px; }
+        .btn-container { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            max-width: 400px; 
+            margin: 0 auto; 
+        }
+        .btn { 
+            background: #ff6700; 
+            color: white; 
+            text-decoration: none; 
+            padding: 18px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+            display: block; 
+            transition: background 0.2s;
+        }
+        .btn:active { 
+            background: #cf5300; 
+        }
+        #installBtn { 
+            background: #28a745; 
+            display: none; 
+            margin: 20px auto; 
+            padding: 14px 28px; 
+            border: none; 
+            color: white; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
 
-    <h2>Launcher Progresivo (Todo en Uno) 🚀</h2>
-    <p>Sube este único archivo a GitHub para instalarlo como App nativa.</p>
+    <h2>Launcher Progresivo 🚀</h2>
+    <p>Usa los botones para abrir las configuraciones del sistema</p>
     
+    <!-- Botón dinámico de instalación -->
     <button id="installBtn">📥 Instalar Aplicación</button>
 
     <div class="btn-container">
-        <!-- Enlaces de actividades nativas de Android -->
-        <a class="btn" href="intent:#Intent;launchFlags=0x10000000;component=com.android.settings/.Settings$PowerUsageSummaryActivity;end">🔋 Uso de Batería</a>
-        <a class="btn" href="intent:#Intent;launchFlags=0x10000000;component=com.android.settings/.Settings$BatterySaverSettingsActivity;end">⚡ Ahorro de Energía</a>
-        <a class="btn" href="intent:#Intent;launchFlags=0x10000000;component=com.android.settings/.Settings;end">⚙️ Ajustes Generales</a>
+        <!-- Sintaxis universal corregida para evitar el menú "Abrir con" -->
+        <a class="btn" href="intent:#Intent;action=android.intent.action.POWER_USAGE_SUMMARY;launchFlags=0x10000000;end">🔋 Uso de Batería</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.BATTERY_SAVER_SETTINGS;launchFlags=0x10000000;end">⚡ Ahorro de Energía</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.SETTINGS;launchFlags=0x10000000;end">⚙️ Ajustes Generales</a>
+        <a class="btn" href="intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;launchFlags=0x10000000;end">🛠️ Opciones de Desarrollador</a>
     </div>
 
     <script>
-        // TRUCO 2: Inyectar el Service Worker (sw.js) como un Blob de texto en línea
+        // Carga dinámica del Service Worker en memoria
         if ('serviceWorker' in navigator) {
             const swCode = "self.addEventListener('fetch', function(event) { event.respondWith(fetch(event.request)); });";
             const blob = new Blob([swCode], { type: 'application/javascript' });
             const swUrl = URL.createObjectURL(blob);
             
             navigator.serviceWorker.register(swUrl, { scope: './' })
-            .then(() => console.log("Service Worker inyectado correctamente"))
+            .then(() => console.log("Service Worker listo"))
             .catch(err => console.log("Error de Service Worker:", err));
         }
 
-        // Lógica del botón de instalación de la aplicación
+        // Controlador para detectar si la app se puede instalar
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
