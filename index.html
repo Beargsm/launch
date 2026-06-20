@@ -217,29 +217,39 @@ const customSection = document.getElementById('customSection');
 const customButtonsGrid = document.getElementById('customButtonsGrid');
 function buildIntentUrl(pkg, cls, flag, extrasStr) {
 
-    // Limpieza fuerte (MUY importante en MIUI)
+    // 🔧 LIMPIEZA EXTREMA MIUI / ANDROID
     pkg = (pkg || "").trim();
     cls = (cls || "").trim().replace(/\s+/g, "");
 
     if (!pkg || !cls) return "";
 
-    // 🔥 Fallback seguro para Ajustes
-    if (
-        pkg === "com.android.settings" &&
-        (cls === "com.android.settings.Settings" || cls.includes("Settings"))
-    ) {
+    // 🔥 FIX: inner classes MIUI / Android
+    // Ej: Settings$MyDeviceInfoActivity
+    if (cls.includes(" ")) cls = cls.replace(/\s+/g, "");
+    if (cls.includes("$")) cls = cls.split("$").join("$");
+
+    // ===============================
+    // 🟡 FALLBACK 1: SETTINGS GLOBAL
+    // ===============================
+    if (pkg === "com.android.settings" &&
+        (cls.includes("Settings") || cls === "com.android.settings.Settings")) {
+
         return "intent:#Intent;action=android.settings.SETTINGS;end";
     }
 
-    // Base intent
+    // ===============================
+    // 🔥 INTENT BASE (MODO EXTREMO)
+    // ===============================
     let intent = "intent:#Intent;";
 
     intent += "action=android.intent.action.MAIN;";
     intent += `package=${pkg};`;
     intent += `component=${pkg}/${cls};`;
-    intent += `launchFlags=${flag || "0x10000000"};`;
+    intent += "launchFlags=0x10000000;";
 
-    // Extras (soporta S / i / B / l)
+    // ===============================
+    // ⚙️ EXTRAS ENGINE
+    // ===============================
     if (extrasStr && extrasStr.trim()) {
 
         extrasStr.split("&").forEach(extra => {
@@ -250,40 +260,37 @@ function buildIntentUrl(pkg, cls, flag, extrasStr) {
             let key = pair[0].trim();
             let value = pair[1].trim();
 
-            // String
-            if (key.startsWith("S.")) {
-                intent += `${key}=${encodeURIComponent(value)};`;
+            // string
+            if (!key.startsWith("i.") &&
+                !key.startsWith("B.") &&
+                !key.startsWith("l.")) {
+
+                intent += `S.${key}=${encodeURIComponent(value)};`;
             }
 
-            // Integer
+            // int
             else if (key.startsWith("i.")) {
                 intent += `${key}=${parseInt(value || 0)};`;
             }
 
-            // Boolean
+            // boolean
             else if (key.startsWith("B.")) {
                 intent += `${key}=${value === "true"};`;
             }
 
-            // Long
+            // long
             else if (key.startsWith("l.")) {
                 intent += `${key}=${value};`;
-            }
-
-            // default string
-            else {
-                intent += `S.${key}=${encodeURIComponent(value)};`;
             }
         });
     }
 
     intent += "end";
 
-    console.log("INTENT GENERATED:", intent);
+    console.log("🔥 INTENT GENERATED:", intent);
 
     return intent;
 }
-
 function launchIntent(url) {
     const a = document.createElement("a");
     a.href = url;
@@ -292,6 +299,22 @@ function launchIntent(url) {
     a.remove();
 }
 
+    function launch(pkg, cls) {
+
+    const intent = buildIntentUrl(pkg, cls);
+
+    // 🔥 Método 1 (directo)
+    window.location.href = intent;
+
+    // 🔥 Método 2 fallback (MIUI agresivo)
+    setTimeout(() => {
+        const a = document.createElement("a");
+        a.href = intent;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }, 50);
+}
 function loadCustomIntents() {
     const saved = JSON.parse(localStorage.getItem('bearGsmExpertIntents')) || [];
 
