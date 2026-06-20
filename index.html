@@ -163,6 +163,29 @@
             <a class="btn" href="intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;launchFlags=0x10000000;end" style="border-left-color: var(--purple);"><span>💻 Opciones de Desarrollador</span></a>
             <a class="btn" href="intent:#Intent;action=android.intent.action.MAIN;component=com.android.settings/.RadioInfo;launchFlags=0x10000000;end" style="border-left-color: var(--cyan);"><span>📶 Band Lock (RadioInfo 4G/5G)</span></a>
             <a class="btn" href="intent:#Intent;action=android.provider.Telephony.SECRET_CODE;data=android_secret_code://6484;end" style="border-left-color: #e91e63;"><span>🔬 Menú CIT / Hardware (Xiaomi)</span></a>
+        <a class="btn"
+href="intent:#Intent;action=android.settings.SETTINGS;end"
+style="border-left-color:#28a745;">
+<span>⚙️ Ajustes Generales</span>
+</a>
+
+<a class="btn"
+href="intent:#Intent;action=android.settings.WIFI_SETTINGS;end"
+style="border-left-color:#00bcd4;">
+<span>📶 Wi-Fi</span>
+</a>
+
+<a class="btn"
+href="intent:#Intent;action=android.settings.APPLICATION_SETTINGS;end"
+style="border-left-color:#9c27b0;">
+<span>📱 Aplicaciones</span>
+</a>
+
+<a class="btn"
+href="intent:#Intent;action=android.settings.SECURITY_SETTINGS;end"
+style="border-left-color:#d9534f;">
+<span>🔒 Seguridad</span>
+</a>
         </div>
     </div>
 
@@ -172,28 +195,58 @@
 
         // Construye la URL de Intent emulando las reglas nativas de Android
 function buildIntentUrl(pkg, cls, flag, extrasStr) {
-    // REGLA DE OREJA: Si es el menú de ajustes raíz, forzamos la acción pública limpia
-    if (pkg === "com.android.settings" && (cls === "com.android.settings.Settings" || cls.includes("SettingsHomepageActivity"))) {
+
+    // Ajustes universales
+    if (
+        pkg === "com.android.settings" &&
+        (
+            cls === "com.android.settings.Settings" ||
+            cls.includes("SettingsHomepageActivity")
+        )
+    ) {
         return `intent:#Intent;action=android.settings.SETTINGS;launchFlags=${flag};end`;
     }
-    
-    // Para todas las demás, usamos una estructura de componente directa y limpia.
-    // Si la actividad es pública (exported=true), se abrirá. 
-    // Si es privada, Android bloqueará la acción de forma segura en lugar de bucear a Telcel.
-    let base = `intent:#Intent;action=android.intent.action.MAIN;component=${pkg}/${cls};launchFlags=${flag};`;
-    
-    if(extrasStr && extrasStr.includes('=')) {
-        const parts = extrasStr.split('&');
-        parts.forEach(p => {
-            const pair = p.split('=');
-            if(pair.length === 2) {
-                base += `S.${pair[0]}=${encodeURIComponent(pair[1])};`; 
+
+    let intent = "intent:#Intent;";
+
+    intent += "action=android.intent.action.MAIN;";
+    intent += `package=${pkg};`;
+    intent += `component=${pkg}/${cls};`;
+    intent += `launchFlags=${flag};`;
+
+    if (extrasStr && extrasStr.trim()) {
+
+        extrasStr.split("&").forEach(extra => {
+
+            const pair = extra.split("=");
+
+            if (pair.length !== 2) return;
+
+            let key = pair[0].trim();
+            let value = pair[1].trim();
+
+            if (key.startsWith("S.")) {
+                intent += `${key}=${encodeURIComponent(value)};`;
             }
+            else if (key.startsWith("i.")) {
+                intent += `${key}=${parseInt(value)};`;
+            }
+            else if (key.startsWith("B.")) {
+                intent += `${key}=${value};`;
+            }
+            else if (key.startsWith("l.")) {
+                intent += `${key}=${value};`;
+            }
+            else {
+                intent += `S.${key}=${encodeURIComponent(value)};`;
+            }
+
         });
     }
-    
-    base += 'end';
-    return base;
+
+    intent += "end";
+
+    return intent;
 }
         function loadCustomIntents() {
             const saved = JSON.parse(localStorage.getItem('bearGsmExpertIntents')) || [];
@@ -291,10 +344,28 @@ function buildIntentUrl(pkg, cls, flag, extrasStr) {
             reader.onload = function(evt) {
                 try {
                     const parsed = JSON.parse(evt.target.result);
-                    if(Array.isArray(parsed)) {
-                        localStorage.setItem('bearGsmExpertIntents', JSON.stringify(parsed));
-                        loadCustomIntents();
-                        alert('Base de Datos importada con éxito.');
+if (!Array.isArray(parsed)) {
+    throw new Error("Formato inválido");
+}
+
+const valid = parsed.every(item =>
+    item.name &&
+    item.package &&
+    item.class
+);
+
+if (!valid) {
+    throw new Error("Estructura incorrecta");
+}
+
+localStorage.setItem(
+    'bearGsmExpertIntents',
+    JSON.stringify(parsed)
+);
+
+loadCustomIntents();
+
+alert('Base de Datos importada con éxito.');
                     }
                 } catch(err) { alert('Archivo de backup inválido.'); }
             };
