@@ -192,36 +192,63 @@ style="border-left-color:#d9534f;">
 <script>
 const customSection = document.getElementById('customSection');
 const customButtonsGrid = document.getElementById('customButtonsGrid');
-
 function buildIntentUrl(pkg, cls, flag, extrasStr) {
 
+    // Limpieza fuerte (MUY importante en MIUI)
+    pkg = (pkg || "").trim();
+    cls = (cls || "").trim().replace(/\s+/g, "");
+
+    if (!pkg || !cls) return "";
+
+    // 🔥 Fallback seguro para Ajustes
     if (
         pkg === "com.android.settings" &&
-        (
-            cls === "com.android.settings.Settings" ||
-            cls.includes("SettingsHomepageActivity")
-        )
+        (cls === "com.android.settings.Settings" || cls.includes("Settings"))
     ) {
         return "intent:#Intent;action=android.settings.SETTINGS;end";
     }
 
+    // Base intent
     let intent = "intent:#Intent;";
+
     intent += "action=android.intent.action.MAIN;";
     intent += `package=${pkg};`;
     intent += `component=${pkg}/${cls};`;
-    intent += `launchFlags=${flag};`;
+    intent += `launchFlags=${flag || "0x10000000"};`;
 
+    // Extras (soporta S / i / B / l)
     if (extrasStr && extrasStr.trim()) {
+
         extrasStr.split("&").forEach(extra => {
+
             const pair = extra.split("=");
             if (pair.length !== 2) return;
 
             let key = pair[0].trim();
             let value = pair[1].trim();
 
-            if (key.startsWith("i.")) {
-                intent += `${key}=${parseInt(value)};`;
-            } else {
+            // String
+            if (key.startsWith("S.")) {
+                intent += `${key}=${encodeURIComponent(value)};`;
+            }
+
+            // Integer
+            else if (key.startsWith("i.")) {
+                intent += `${key}=${parseInt(value || 0)};`;
+            }
+
+            // Boolean
+            else if (key.startsWith("B.")) {
+                intent += `${key}=${value === "true"};`;
+            }
+
+            // Long
+            else if (key.startsWith("l.")) {
+                intent += `${key}=${value};`;
+            }
+
+            // default string
+            else {
                 intent += `S.${key}=${encodeURIComponent(value)};`;
             }
         });
@@ -229,7 +256,8 @@ function buildIntentUrl(pkg, cls, flag, extrasStr) {
 
     intent += "end";
 
-    console.log("INTENT:", intent);
+    console.log("INTENT GENERATED:", intent);
+
     return intent;
 }
 
